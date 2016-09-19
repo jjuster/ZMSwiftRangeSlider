@@ -222,13 +222,13 @@ public class RangeSlider: UIControl {
             let maxValuePosition = position(maxValue) - thumbRadius
             maxValueThumbLayer.frame = CGRect(x: maxValuePosition,
                                               y: offsetY,
-                                              width: thumbSize,
+                                              width: thumbSize * 2.0,
                                               height: thumbSize)
             maxValueThumbLayer.setNeedsDisplay()
 
             maxValueDisplayLayer.frame = CGRect(x: maxValuePosition,
                                                 y: displayLayerOffsetY,
-                                                width: thumbSize,
+                                                width: thumbSize * 2.0,
                                                 height: displayTextFontSize)
 
             if let maxValueDisplayText = delegate?.rangeSliderMaxValueDisplayText(self, maxValue: maxValue) {
