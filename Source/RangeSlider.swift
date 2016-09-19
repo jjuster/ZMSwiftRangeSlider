@@ -3,10 +3,6 @@ import UIKit
 @IBDesignable
 public class RangeSlider: UIControl {
 
-    public typealias ValueChangedCallback = (_: Int, _: Int) -> Void
-    public typealias MinValueDisplayTextGetter = (_: Int) -> String?
-    public typealias MaxValueDisplayTextGetter = (_: Int) -> String?
-
     private let trackLayer = TrackLayer()
     private let minValueThumbLayer = ThumbLayer()
     private let minValueDisplayLayer = TextLayer()
@@ -16,13 +12,11 @@ public class RangeSlider: UIControl {
     private var beginTrackLocation = CGPointZero
     private var rangeValues = Array(0...100)
 
-    private var valueChangedCallback: ValueChangedCallback?
-    private var minValueDisplayTextGetter: MinValueDisplayTextGetter?
-    private var maxValueDisplayTextGetter: MaxValueDisplayTextGetter?
-
     var minValue: Int
     var maxValue: Int
     var thumbRadius: CGFloat
+
+    public var delegate: RangeSliderDelegate?
 
     public override var frame: CGRect {
         didSet {
@@ -131,7 +125,9 @@ public class RangeSlider: UIControl {
             }
         }
         updateLayerFrames()
-        valueChangedCallback?(minValue, maxValue)
+        
+        delegate?.rangeSliderValueChanged(self, minValue: minValue, maxValue: maxValue)
+        
         return true
     }
     
@@ -164,18 +160,6 @@ public class RangeSlider: UIControl {
         }
         
         updateLayerFrames()
-    }
-
-    public func setValueChangedCallback(callback: ValueChangedCallback?) {
-        self.valueChangedCallback = callback
-    }
-
-    public func setMinValueDisplayTextGetter(getter: MinValueDisplayTextGetter?) {
-        self.minValueDisplayTextGetter = getter
-    }
-
-    public func setMaxValueDisplayTextGetter(getter: MaxValueDisplayTextGetter?) {
-        self.maxValueDisplayTextGetter = getter
     }
 
     func setupLayers() {
@@ -226,7 +210,7 @@ public class RangeSlider: UIControl {
                                             width: thumbSize,
                                             height: displayTextFontSize)
 
-        if let minValueDisplayText = minValueDisplayTextGetter?(minValue) {
+        if let minValueDisplayText = delegate?.rangeSliderMinValueDisplayText(self, minValue: minValue) {
             minValueDisplayLayer.string = minValueDisplayText
         } else {
             minValueDisplayLayer.string = "\(minValue)"
@@ -247,7 +231,7 @@ public class RangeSlider: UIControl {
                                                 width: thumbSize,
                                                 height: displayTextFontSize)
 
-            if let maxValueDisplayText = maxValueDisplayTextGetter?(maxValue) {
+            if let maxValueDisplayText = delegate?.rangeSliderMaxValueDisplayText(self, maxValue: maxValue) {
                 maxValueDisplayLayer.string = maxValueDisplayText
             } else {
                 maxValueDisplayLayer.string = "\(maxValue)"
