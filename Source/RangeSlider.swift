@@ -3,9 +3,9 @@ import UIKit
 @IBDesignable
 public class RangeSlider: UIControl {
 
-    public typealias ValueChangedCallback = (minValue: Int, maxValue: Int) -> Void
-    public typealias MinValueDisplayTextGetter = (minValue: Int) -> String?
-    public typealias MaxValueDisplayTextGetter = (maxValue: Int) -> String?
+    public typealias ValueChangedCallback = (_: Int, _: Int) -> Void
+    public typealias MinValueDisplayTextGetter = (_: Int) -> String?
+    public typealias MaxValueDisplayTextGetter = (_: Int) -> String?
 
     private let trackLayer = TrackLayer()
     private let minValueThumbLayer = ThumbLayer()
@@ -104,7 +104,9 @@ public class RangeSlider: UIControl {
         let count = rangeValues.count
         var index = Int(location.x * CGFloat(count) / (bounds.width - thumbSize))
 
-        if maxValue == minValue && location.x > beginTrackLocation.x && !maxValueThumbLayer.isHighlight {
+        let maxV = maxValue == -1 ? rangeValues[rangeValues.count - 1] : maxValue
+        
+        if maxV == minValue && location.x > beginTrackLocation.x && !maxValueThumbLayer.isHighlight {
             maxValueThumbLayer.isHighlight = true
             minValueThumbLayer.isHighlight = false
         }
@@ -116,12 +118,12 @@ public class RangeSlider: UIControl {
         }
 
         if minValueThumbLayer.isHighlight {
-            if index > rangeValues.indexOf(maxValue)! {
-                minValue = maxValue
+            if index > rangeValues.indexOf(maxV)! {
+                minValue = maxV
             } else {
                 minValue = rangeValues[index]
             }
-        } else if maxValueThumbLayer.isHighlight {
+        } else if maxValue != -1 && maxValueThumbLayer.isHighlight {
             if index < rangeValues.indexOf(minValue)! {
                 maxValue = minValue
             } else {
@@ -129,10 +131,18 @@ public class RangeSlider: UIControl {
             }
         }
         updateLayerFrames()
-        valueChangedCallback?(minValue: minValue, maxValue: maxValue)
+        valueChangedCallback?(minValue, maxValue)
         return true
     }
-
+    
+    public func minRange() -> Int {
+        return rangeValues[0]
+    }
+    
+    public func maxRange() -> Int {
+        return rangeValues[rangeValues.count - 1]
+    }
+    
     public override func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
         minValueThumbLayer.isHighlight = false
         maxValueThumbLayer.isHighlight = false
@@ -147,6 +157,12 @@ public class RangeSlider: UIControl {
     public func setMinAndMaxValue(minValue: Int, maxValue: Int) {
         self.minValue = minValue
         self.maxValue = maxValue
+        
+        if maxValue == -1 {
+            maxValueThumbLayer.hidden = true
+            maxValueDisplayLayer.hidden = true
+        }
+        
         updateLayerFrames()
     }
 
@@ -210,7 +226,7 @@ public class RangeSlider: UIControl {
                                             width: thumbSize,
                                             height: displayTextFontSize)
 
-        if let minValueDisplayText = minValueDisplayTextGetter?(minValue: minValue) {
+        if let minValueDisplayText = minValueDisplayTextGetter?(minValue) {
             minValueDisplayLayer.string = minValueDisplayText
         } else {
             minValueDisplayLayer.string = "\(minValue)"
@@ -218,27 +234,28 @@ public class RangeSlider: UIControl {
 
         minValueDisplayLayer.setNeedsDisplay()
 
+        if maxValue != -1 {
+            let maxValuePosition = position(maxValue) - thumbRadius
+            maxValueThumbLayer.frame = CGRect(x: maxValuePosition,
+                                              y: offsetY,
+                                              width: thumbSize,
+                                              height: thumbSize)
+            maxValueThumbLayer.setNeedsDisplay()
 
-        let maxValuePosition = position(maxValue) - thumbRadius
-        maxValueThumbLayer.frame = CGRect(x: maxValuePosition,
-                                          y: offsetY,
-                                          width: thumbSize,
-                                          height: thumbSize)
-        maxValueThumbLayer.setNeedsDisplay()
+            maxValueDisplayLayer.frame = CGRect(x: maxValuePosition,
+                                                y: displayLayerOffsetY,
+                                                width: thumbSize,
+                                                height: displayTextFontSize)
 
-        maxValueDisplayLayer.frame = CGRect(x: maxValuePosition,
-                                            y: displayLayerOffsetY,
-                                            width: thumbSize,
-                                            height: displayTextFontSize)
+            if let maxValueDisplayText = maxValueDisplayTextGetter?(maxValue) {
+                maxValueDisplayLayer.string = maxValueDisplayText
+            } else {
+                maxValueDisplayLayer.string = "\(maxValue)"
+            }
 
-        if let maxValueDisplayText = maxValueDisplayTextGetter?(maxValue: maxValue) {
-            maxValueDisplayLayer.string = maxValueDisplayText
-        } else {
-            maxValueDisplayLayer.string = "\(maxValue)"
+            maxValueDisplayLayer.setNeedsDisplay()
         }
-
-        maxValueDisplayLayer.setNeedsDisplay()
-
+        
         CATransaction.commit()
     }
 
