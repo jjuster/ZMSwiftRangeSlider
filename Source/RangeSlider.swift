@@ -35,7 +35,13 @@ public class RangeSlider: UIControl {
             updateLayerFrames()
         }
     }
-
+    
+    @IBInspectable public var thumbTintColor: UIColor = UIColor(white: 0.9, alpha: 1.0) {
+        didSet {
+            updateLayerFrames()
+        }
+    }
+    
     @IBInspectable public var trackHighlightTintColor: UIColor = UIColor(red: 2.0 / 255, green: 192.0 / 255, blue: 92.0 / 255, alpha: 1.0) {
         didSet {
             updateLayerFrames()
