@@ -214,7 +214,7 @@ public class RangeSlider: UIControl {
         minValueDisplayLayer.frame = CGRect(x: minValuePosition - thumbRadius,
                                             y: displayLayerOffsetY,
                                             width: thumbSize * 2.0,
-                                            height: displayTextFontSize)
+                                            height: displayTextFontSize * 1.5)
 
         if let minValueDisplayText = delegate?.rangeSliderMinValueDisplayText(self, minValue: minValue) {
             minValueDisplayLayer.string = minValueDisplayText
@@ -235,7 +235,7 @@ public class RangeSlider: UIControl {
             maxValueDisplayLayer.frame = CGRect(x: maxValuePosition - thumbRadius,
                                                 y: displayLayerOffsetY,
                                                 width: thumbSize * 2.0,
-                                                height: displayTextFontSize)
+                                                height: displayTextFontSize * 1.5)
 
             if let maxValueDisplayText = delegate?.rangeSliderMaxValueDisplayText(self, maxValue: maxValue) {
                 maxValueDisplayLayer.string = maxValueDisplayText
