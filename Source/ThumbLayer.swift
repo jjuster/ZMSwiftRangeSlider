@@ -17,7 +17,7 @@ class ThumbLayer: CALayer {
 
         let thumbFrame = bounds.insetBy(dx: slider.thumbOutlineSize / 2.0, dy: slider.thumbOutlineSize / 2.0)
         let thumbPath = UIBezierPath(roundedRect: thumbFrame, cornerRadius: thumbFrame.height * 0.5)
-        CGContextSetFillColorWithColor(ctx, UIColor.whiteColor().CGColor)
+        CGContextSetFillColorWithColor(ctx, slider.thumbTintColor.CGColor)
         CGContextAddPath(ctx, thumbPath.CGPath)
         CGContextFillPath(ctx)
 
