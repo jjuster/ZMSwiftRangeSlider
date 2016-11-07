@@ -10,26 +10,26 @@ class ThumbLayer: CALayer {
 
     weak var rangeSlider: RangeSlider?
 
-    override func drawInContext(ctx: CGContext) {
+    override func draw(in ctx: CGContext) {
         guard let slider = rangeSlider else {
             return
         }
 
         let thumbFrame = bounds.insetBy(dx: slider.thumbOutlineSize / 2.0, dy: slider.thumbOutlineSize / 2.0)
         let thumbPath = UIBezierPath(roundedRect: thumbFrame, cornerRadius: thumbFrame.height * 0.5)
-        CGContextSetFillColorWithColor(ctx, slider.thumbTintColor.CGColor)
-        CGContextAddPath(ctx, thumbPath.CGPath)
-        CGContextFillPath(ctx)
+        ctx.setFillColor(slider.thumbTintColor.cgColor)
+        ctx.addPath(thumbPath.cgPath)
+        ctx.fillPath()
 
-        CGContextSetStrokeColorWithColor(ctx, slider.trackHighlightTintColor.CGColor)
-        CGContextSetLineWidth(ctx, slider.thumbOutlineSize)
-        CGContextAddPath(ctx, thumbPath.CGPath)
-        CGContextStrokePath(ctx)
+        ctx.setStrokeColor(slider.trackHighlightTintColor.cgColor)
+        ctx.setLineWidth(slider.thumbOutlineSize)
+        ctx.addPath(thumbPath.cgPath)
+        ctx.strokePath()
 
         if isHighlight {
-            CGContextSetFillColorWithColor(ctx, UIColor(white: 0.0, alpha: 0.1).CGColor)
-            CGContextAddPath(ctx, thumbPath.CGPath)
-            CGContextFillPath(ctx)
+            ctx.setFillColor(UIColor(white: 0.0, alpha: 0.1).cgColor)
+            ctx.addPath(thumbPath.cgPath)
+            ctx.fillPath()
         }
     }
 }
