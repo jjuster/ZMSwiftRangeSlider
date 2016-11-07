@@ -1,67 +1,67 @@
 import UIKit
 
 @IBDesignable
-public class RangeSlider: UIControl {
+open class RangeSlider: UIControl {
 
-    private let trackLayer = TrackLayer()
-    private let minValueThumbLayer = ThumbLayer()
-    private let minValueDisplayLayer = TextLayer()
-    private let maxValueThumbLayer = ThumbLayer()
-    private let maxValueDisplayLayer = TextLayer()
+    fileprivate let trackLayer = TrackLayer()
+    fileprivate let minValueThumbLayer = ThumbLayer()
+    fileprivate let minValueDisplayLayer = TextLayer()
+    fileprivate let maxValueThumbLayer = ThumbLayer()
+    fileprivate let maxValueDisplayLayer = TextLayer()
 
-    private var beginTrackLocation = CGPointZero
-    private var rangeValues = Array(0...100)
+    fileprivate var beginTrackLocation = CGPoint.zero
+    fileprivate var rangeValues = Array(0...100)
 
     var minValue: Int
     var maxValue: Int
     var thumbRadius: CGFloat
 
-    public var delegate: RangeSliderDelegate?
+    open var delegate: RangeSliderDelegate?
 
-    public override var frame: CGRect {
+    open override var frame: CGRect {
         didSet {
             updateLayerFrames()
         }
     }
 
-    @IBInspectable public var trackHeight: CGFloat = 6.0 {
+    @IBInspectable open var trackHeight: CGFloat = 6.0 {
         didSet {
             updateLayerFrames()
         }
     }
 
-    @IBInspectable public var trackTintColor: UIColor = UIColor(white: 0.9, alpha: 1.0) {
+    @IBInspectable open var trackTintColor: UIColor = UIColor(white: 0.9, alpha: 1.0) {
         didSet {
             updateLayerFrames()
         }
     }
     
-    @IBInspectable public var thumbTintColor: UIColor = UIColor(white: 0.9, alpha: 1.0) {
+    @IBInspectable open var thumbTintColor: UIColor = UIColor(white: 0.9, alpha: 1.0) {
         didSet {
             updateLayerFrames()
         }
     }
     
-    @IBInspectable public var trackHighlightTintColor: UIColor = UIColor(red: 2.0 / 255, green: 192.0 / 255, blue: 92.0 / 255, alpha: 1.0) {
+    @IBInspectable open var trackHighlightTintColor: UIColor = UIColor(red: 2.0 / 255, green: 192.0 / 255, blue: 92.0 / 255, alpha: 1.0) {
         didSet {
             updateLayerFrames()
         }
     }
 
-    @IBInspectable public var thumbSize: CGFloat = 32.0 {
+    @IBInspectable open var thumbSize: CGFloat = 32.0 {
         didSet {
             thumbRadius = thumbSize / 2.0
             updateLayerFrames()
         }
     }
 
-    @IBInspectable public var thumbOutlineSize: CGFloat = 2.0 {
+    @IBInspectable open var thumbOutlineSize: CGFloat = 2.0 {
         didSet {
             updateLayerFrames()
         }
     }
 
-    @IBInspectable public var displayTextFontSize: CGFloat = 14.0 {
+    @IBInspectable open var displayTextFontSize: CGFloat = 14.0 {
         didSet {
             updateLayerFrames()
         }
@@ -83,13 +83,13 @@ public class RangeSlider: UIControl {
         setupLayers()
     }
 
-    public override func layoutSublayersOfLayer(layer: CALayer) {
-        super.layoutSublayersOfLayer(layer)
+    open override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
         updateLayerFrames()
     }
 
-    public override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
-        beginTrackLocation = touch.locationInView(self)
+    open override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        beginTrackLocation = touch.location(in: self)
         if minValueThumbLayer.frame.contains(beginTrackLocation) {
             minValueThumbLayer.isHighlight = true
         } else if maxValueThumbLayer.frame.contains(beginTrackLocation) {
@@ -99,8 +99,8 @@ public class RangeSlider: UIControl {
         return minValueThumbLayer.isHighlight || maxValueThumbLayer.isHighlight
     }
 
-    public override func continueTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
-        let location = touch.locationInView(self)
+    open override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let location = touch.location(in: self)
         let count = rangeValues.count
         var index = Int(location.x * CGFloat(count) / (bounds.width - thumbSize))
 
@@ -118,13 +118,13 @@ public class RangeSlider: UIControl {
         }
 
         if minValueThumbLayer.isHighlight {
-            if index > rangeValues.indexOf(maxV)! {
+            if index > rangeValues.index(of: maxV)! {
                 minValue = maxV
             } else {
                 minValue = rangeValues[index]
             }
         } else if maxValue != -1 && maxValueThumbLayer.isHighlight {
-            if index < rangeValues.indexOf(minValue)! {
+            if index < rangeValues.index(of: minValue)! {
                 maxValue = minValue
             } else {
                 maxValue = rangeValues[index]
@@ -137,58 +137,58 @@ public class RangeSlider: UIControl {
         return true
     }
     
-    public func minRange() -> Int {
+    open func minRange() -> Int {
         return rangeValues[0]
     }
     
-    public func maxRange() -> Int {
+    open func maxRange() -> Int {
         return rangeValues[rangeValues.count - 1]
     }
     
-    public override func endTrackingWithTouch(touch: UITouch?, withEvent event: UIEvent?) {
+    open override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
         minValueThumbLayer.isHighlight = false
         maxValueThumbLayer.isHighlight = false
     }
 
     @nonobjc
-    public func setRangeValues(rangeValues: [Int]) {
+    open func setRangeValues(_ rangeValues: [Int]) {
         self.rangeValues = rangeValues
         setMinAndMaxValue(rangeValues[0], maxValue: rangeValues[rangeValues.count - 1])
     }
 
-    public func setMinAndMaxValue(minValue: Int, maxValue: Int) {
+    open func setMinAndMaxValue(_ minValue: Int, maxValue: Int) {
         self.minValue = minValue
         self.maxValue = maxValue
         
         if maxValue == -1 {
-            maxValueThumbLayer.hidden = true
-            maxValueDisplayLayer.hidden = true
+            maxValueThumbLayer.isHidden = true
+            maxValueDisplayLayer.isHidden = true
         }
         
         updateLayerFrames()
     }
 
     func setupLayers() {
-        layer.backgroundColor = UIColor.clearColor().CGColor
+        layer.backgroundColor = UIColor.clear.cgColor
 
         trackLayer.rangeSlider = self
-        trackLayer.contentsScale = UIScreen.mainScreen().scale
+        trackLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(trackLayer)
 
         minValueThumbLayer.rangeSlider = self
-        minValueThumbLayer.contentsScale = UIScreen.mainScreen().scale
+        minValueThumbLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(minValueThumbLayer)
 
         minValueDisplayLayer.rangeSlider = self
-        minValueDisplayLayer.contentsScale = UIScreen.mainScreen().scale
+        minValueDisplayLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(minValueDisplayLayer)
 
         maxValueThumbLayer.rangeSlider = self
-        maxValueThumbLayer.contentsScale = UIScreen.mainScreen().scale
+        maxValueThumbLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(maxValueThumbLayer)
 
         maxValueDisplayLayer.rangeSlider = self
-        maxValueDisplayLayer.contentsScale = UIScreen.mainScreen().scale
+        maxValueDisplayLayer.contentsScale = UIScreen.main.scale
         layer.addSublayer(maxValueDisplayLayer)
     }
 
@@ -249,8 +249,8 @@ public class RangeSlider: UIControl {
         CATransaction.commit()
     }
 
-    func position(value: Int) -> CGFloat {
-        let index = rangeValues.indexOf(value)!
+    func position(_ value: Int) -> CGFloat {
+        let index = rangeValues.index(of: value)!
         let count = rangeValues.count
         if index == 0 {
             return thumbRadius
