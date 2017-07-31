@@ -132,8 +132,6 @@ open class RangeSlider: UIControl {
         }
         updateLayerFrames()
         
-        delegate?.rangeSliderValueChanged(self, minValue: minValue, maxValue: maxValue)
-        
         return true
     }
     
@@ -148,6 +146,7 @@ open class RangeSlider: UIControl {
     open override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
         minValueThumbLayer.isHighlight = false
         maxValueThumbLayer.isHighlight = false
+        delegate?.rangeSliderValueChanged(self, minValue: minValue, maxValue: maxValue)        
     }
 
     @nonobjc
